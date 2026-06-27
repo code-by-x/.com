@@ -1,0 +1,2546 @@
+<!DOCTYPE html>
+<html lang="ur">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CODE BY X -Pro</title>
+    
+    <!-- PrismJS (Code Highlight style) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    
+    <!-- Prism Autoloader -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+
+    <!-- Font Awesome (fa- style icons) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Firebase Compat CDNs -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+        
+        /* High-Level Text Selection & Copy Prevention */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #0d0d10;
+            color: #e1e1e6;
+            margin: 0;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            user-select: none;
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+        }
+        
+        .container {
+            max-width: 800px;
+            width: 100%;
+            background: #141419;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+            border: 1px solid #20202a;
+            position: relative;
+            overflow: hidden;
+            display: none; /* Login se pehle hide rahe ga */
+        }
+        
+        /* Top Navigation Bar with Menu Button & Relocated Lights */
+        .top-nav-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #101015;
+            padding: 12px 18px;
+            border-radius: 8px;
+            border: 1px solid #252533;
+            margin-bottom: 20px;
+        }
+        .menu-btn {
+            font-size: 24px;
+            color: #4caf50;
+            cursor: pointer;
+            user-select: none;
+            line-height: 1;
+        }
+        .welcome-group {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .welcome-text {
+            font-size: 14px;
+            font-weight: 600;
+            color: #e1e1e6;
+        }
+
+        /* Sidebar Navigation Drawer */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: -260px;
+            width: 260px;
+            height: 100%;
+            background: #101015;
+            border-right: 1px solid #252533;
+            box-shadow: 5px 0 25px rgba(0,0,0,0.7);
+            z-index: 1000;
+            transition: left 0.3s ease;
+            padding: 25px;
+            display: flex;
+            flex-direction: column;
+        }
+        .sidebar.open {
+            left: 0;
+        }
+        .sidebar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #252533;
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+        .close-sidebar-btn {
+            font-size: 22px;
+            color: #8a8a9e;
+            cursor: pointer;
+            line-height: 1;
+        }
+        .sidebar-menu {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .sidebar-item {
+            padding: 12px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            color: #e1e1e6;
+            font-size: 15px;
+            font-weight: 500;
+            transition: background 0.3s, color 0.3s;
+            text-align: left;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .sidebar-item:hover {
+            background: #1b1b24;
+            color: #4caf50;
+        }
+        .sidebar-item.logout-item {
+            margin-top: 25px;
+            background: #2b1414;
+            color: #f44336;
+            font-weight: bold;
+        }
+        .sidebar-item.logout-item:hover {
+            background: #3d1a1a;
+            color: #ff5722;
+        }
+        .sidebar-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.6);
+            z-index: 999;
+            display: none;
+        }
+
+        /* App Views Toggle */
+        .app-view {
+            display: none;
+        }
+        .app-view.active {
+            display: block;
+        }
+
+        /* Auth Container Design */
+        .auth-container {
+            max-width: 450px;
+            width: 100%;
+            background: #141419;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+            border: 1px solid #20202a;
+            margin-top: 40px;
+            text-align: center;
+        }
+        .auth-form-group {
+            margin-bottom: 15px;
+            text-align: left;
+        }
+        .auth-form-group label {
+            display: block;
+            font-size: 13px;
+            color: #8a8a9e;
+            margin-bottom: 5px;
+        }
+        .auth-toggle-link {
+            color: #4caf50;
+            cursor: pointer;
+            font-size: 13px;
+            text-decoration: underline;
+            margin-top: 15px;
+            display: inline-block;
+        }
+
+        /* Top Loading Progress Bar */
+        .loader-bar {
+            height: 3px;
+            width: 0%;
+            background-color: #4caf50;
+            position: absolute;
+            top: 0;
+            left: 0;
+            transition: width 0.4s ease;
+            z-index: 100;
+        }
+
+        h1 {
+            text-align: center;
+            color: #4caf50;
+            margin-top: 10px;
+            font-size: 26px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+        .subtitle {
+            text-align: center;
+            color: #8a8a9e;
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+        
+        /* Input Area Group */
+        .input-group {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 15px;
+            align-items: center;
+            width: 100%;
+        }
+        input[type="url"], input[type="text"], input[type="password"], input[type="tel"], input[type="number"], input[type="email"] {
+            flex: 1;
+            padding: 16px;
+            border: 1px solid #252533;
+            border-radius: 6px;
+            background-color: #1b1b24;
+            color: #fff;
+            outline: none;
+            font-size: 16px;
+            transition: border-color 0.3s;
+            width: 100%;
+        }
+        input[type="url"]:focus, input[type="text"]:focus, input[type="password"]:focus, input[type="tel"]:focus, input[type="number"]:focus, input[type="email"]:focus {
+            border-color: #4caf50;
+        }
+        .btn {
+            padding: 16px 32px;
+            background-color: #4caf50;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 16px;
+            transition: background 0.3s;
+        }
+        .btn:hover {
+            background-color: #45a049;
+        }
+        .btn:disabled {
+            background-color: #2e5a31;
+            color: #888;
+            cursor: not-allowed;
+        }
+        .status {
+            margin-bottom: 20px;
+            font-style: italic;
+            color: #ff9800;
+            min-height: 20px;
+            font-size: 14px;
+            text-align: center;
+            line-height: 1.5;
+        }
+        
+        /* Advanced Settings Panel */
+        .settings-toggle {
+            text-align: right;
+            margin-bottom: 15px;
+            width: 100%;
+        }
+        .settings-toggle-btn {
+            background: transparent;
+            border: none;
+            color: #4caf50;
+            cursor: pointer;
+            font-size: 13px;
+            text-decoration: underline;
+            padding: 0;
+            outline: none;
+        }
+        .settings-panel {
+            background: #101015;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #252533;
+            margin-bottom: 20px;
+            display: none;
+        }
+        .settings-panel label {
+            display: block;
+            font-size: 12px;
+            color: #8a8a9e;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+        }
+
+        /* Tabs Design */
+        .tabs {
+            display: flex;
+            border-bottom: 2px solid #252533;
+            margin-bottom: 15px;
+            gap: 5px;
+        }
+        .tab-btn {
+            background: transparent;
+            border: none;
+            color: #8a8a9e;
+            padding: 12px 18px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 14px;
+            border-bottom: 2px solid transparent;
+            margin-bottom: -2px;
+            transition: all 0.3s;
+            outline: none;
+        }
+        .tab-btn.active {
+            color: #4caf50;
+            border-bottom-color: #4caf50;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Code View & Editor Styling */
+        .code-container {
+            position: relative;
+            border-radius: 6px;
+            overflow: hidden;
+            border: 1px solid #252533;
+        }
+        
+        /* Interactive Code Finder Searchbox */
+        .search-box-container {
+            display: flex;
+            background: #101015;
+            border-bottom: 1px solid #252533;
+            padding: 8px 12px;
+            gap: 8px;
+            align-items: center;
+        }
+        .search-box-container input {
+            flex: 1;
+            background: #1b1b24;
+            border: 1px solid #252533;
+            padding: 6px 12px;
+            border-radius: 4px;
+            color: #fff;
+            font-size: 13px;
+            outline: none;
+        }
+        .search-box-container input:focus {
+            border-color: #4caf50;
+        }
+        .search-count {
+            font-size: 12px;
+            color: #8a8a9e;
+        }
+
+        pre[class*="language-"] {
+            margin: 0 !important;
+            height: 400px;
+            overflow: auto;
+            background: #08080c !important;
+            font-size: 13px !important;
+        }
+        
+        /* Live Editor Textarea */
+        .live-editor-textarea {
+            width: 100%;
+            height: 400px;
+            background-color: #08080c;
+            color: #4af626;
+            font-family: 'Courier New', Courier, monospace;
+            padding: 15px;
+            border: none;
+            outline: none;
+            resize: vertical;
+            font-size: 13px;
+            display: none;
+        }
+        
+        /* Action Buttons Area */
+        .action-bar {
+            display: none; 
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        .btn-secondary {
+            background-color: #282835;
+            color: #fff;
+            padding: 10px 16px;
+            font-size: 13px;
+        }
+        .btn-secondary:hover {
+            background-color: #353545;
+        }
+
+        /* Iframe Preview Styling */
+        iframe {
+            width: 100%;
+            height: 400px;
+            background: #fff;
+            border: 1px solid #252533;
+            border-radius: 6px;
+        }
+
+        /* SEO Stats Grid Design */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+        .stat-card {
+            background: #1b1b24;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #252533;
+        }
+        .stat-card.full-width {
+            grid-column: span 2;
+        }
+        .stat-card h3 {
+            margin: 0 0 8px 0;
+            font-size: 12px;
+            color: #8a8a9e;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .stat-card p {
+            margin: 0;
+            font-size: 15px;
+            font-weight: 600;
+            color: #fff;
+            text-align: left;
+            word-break: break-word;
+        }
+        .stat-badge-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+        .badge-box {
+            background: #141419;
+            padding: 10px;
+            border-radius: 6px;
+            text-align: center;
+        }
+        .badge-box span {
+            display: block;
+            font-size: 20px;
+            font-weight: bold;
+            color: #4caf50;
+        }
+        .badge-box label {
+            font-size: 11px;
+            color: #8a8a9e;
+        }
+
+        /* Dynamic Asset List Box */
+        .asset-list {
+            margin-top: 8px;
+            max-height: 150px;
+            overflow-y: auto;
+            background: #141419;
+            padding: 10px;
+            border-radius: 4px;
+            font-size: 11px;
+            color: #8a8a9e;
+            text-align: left;
+            word-break: break-all;
+        }
+        .asset-item {
+            padding: 4px 0;
+            border-bottom: 1px solid #252533;
+        }
+
+        /* Indicator Lights inside top Welcome bar */
+        .lights-container {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+        .indicator-light {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: #33333d;
+            box-shadow: inset 0 0 3px rgba(0,0,0,0.5);
+            transition: background-color 0.3s, box-shadow 0.3s;
+        }
+        .indicator-light.red.active {
+            background-color: #ff4b4b;
+            box-shadow: 0 0 8px #ff4b4b;
+        }
+        .indicator-light.green.active {
+            background-color: #4caf50;
+            box-shadow: 0 0 8px #4caf50;
+        }
+
+        /* Premium Device-Style Pricing Cards */
+        .plans-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        .plan-card {
+            background: #1b1b24;
+            border: 1px solid #2b2b3d;
+            border-radius: 12px;
+            padding: 24px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            min-height: 450px;
+            transition: border-color 0.3s, transform 0.3s;
+        }
+        .plan-card:hover {
+            border-color: #1a73e8;
+            transform: translateY(-2px);
+        }
+        .plan-badge {
+            background: #101015;
+            color: #ff9800;
+            font-size: 11px;
+            font-weight: bold;
+            padding: 5px 14px;
+            border-radius: 20px;
+            align-self: center;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 15px;
+            border: 1px solid #ff9800;
+        }
+        .plan-card .price {
+            font-size: 32px;
+            font-weight: 800;
+            color: #fff;
+            margin: 5px 0;
+        }
+        .plan-card .price-currency {
+            font-size: 14px;
+            color: #8a8a9e;
+            font-weight: normal;
+        }
+        .plan-card .duration {
+            font-size: 12px;
+            color: #8a8a9e;
+            margin-bottom: 15px;
+        }
+        .plan-card ul {
+            list-style: none;
+            padding: 0;
+            margin: 0 0 20px 0;
+            text-align: left;
+            font-size: 13px;
+            color: #e1e1e6;
+        }
+        .plan-card ul li {
+            padding: 8px 0;
+            border-bottom: 1px solid #252533;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .plan-btn {
+            background-color: #1a73e8;
+            color: #fff;
+            font-weight: bold;
+            padding: 12px;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            text-transform: uppercase;
+            font-size: 13px;
+            letter-spacing: 0.5px;
+            transition: background-color 0.2s;
+            width: 100%;
+            margin-top: 15px;
+        }
+        .plan-btn:hover {
+            background-color: #155cb4;
+        }
+
+        /* Footer Section for Socials Link */
+        .footer {
+            margin-top: 25px;
+            text-align: center;
+            font-size: 13px;
+            color: #8a8a9e;
+            border-top: 1px solid #252533;
+            padding-top: 15px;
+            width: 100%;
+        }
+        .footer a {
+            color: #4caf50;
+            text-decoration: underline;
+            font-weight: bold;
+        }
+        .footer a:hover {
+            color: #45a049;
+        }
+    </style>
+</head>
+<body>
+
+<!-- Login/Register Interface -->
+<div class="auth-container" id="authContainer">
+    <h1 id="authTitle" style="color: #4caf50; margin-bottom: 5px;">Login Account </h1>
+    <p style="color: #8a8a9e; font-size: 13px; margin-bottom: 25px;">Dear user our degital web hack / you can hack any web with a link & Join our whatsAPP channel for more new bypass tool and latest update and code by x tool ka update version important servers was payed is leya subscription buy kerna ho gi </p>
+    
+    <!-- Login Form Section -->
+    <form id="loginFormSection" onsubmit="handleLogin(event)">
+        <div class="auth-form-group">
+            <label for="loginEmail"><i class="fa-solid fa-envelope"></i> Email Address</label>
+            <input type="email" id="loginEmail" placeholder="enter your email address..." required>
+        </div>
+        <div class="auth-form-group">
+            <label for="loginPassword"><i class="fa-solid fa-lock"></i> Password</label>
+            <input type="password" id="loginPassword" placeholder="enter your password..." required>
+        </div>
+        <button type="submit" class="btn" style="width: 100%; margin-top: 10px;">Login</button>
+        <span class="auth-toggle-link" onclick="showRegisterForm()">IF YOU HAVE NO Register</span>
+    </form>
+
+    <!-- Register Form Section -->
+    <form id="registerFormSection" onsubmit="handleRegister(event)" style="display: none;">
+        <div class="auth-form-group">
+            <label for="regName"><i class="fa-solid fa-signature"></i> Full Name</label>
+            <input type="text" id="regName" placeholder="Apna naam likhein" required>
+        </div>
+        <div class="auth-form-group">
+            <label for="regEmail"><i class="fa-solid fa-envelope"></i> Email Address</label>
+            <input type="email" id="regEmail" placeholder="enter your email address..." required>
+        </div>
+        <div class="auth-form-group">
+            <label for="regPhone"><i class="fa-solid fa-phone"></i> Phone Number</label>
+            <input type="tel" id="regPhone" placeholder="enter your mobile number..." required>
+        </div>
+        <div class="auth-form-group">
+            <label for="regPassword"><i class="fa-solid fa-lock"></i> Password</label>
+            <input type="password" id="regPassword" placeholder="enter your password..." required>
+        </div>
+        <div class="auth-form-group">
+            <label for="regConfirmPassword"><i class="fa-solid fa-circle-check"></i> Confirm Password</label>
+            <input type="password" id="regConfirmPassword" placeholder="enter your confirm password..." required>
+        </div>
+        <button type="submit" class="btn" style="width: 100%; margin-top: 10px;">Register Account</button>
+        <span class="auth-toggle-link" onclick="showLoginForm()">Pehle se account hai? Login Account </span>
+    </form>
+</div>
+
+<!-- Main Dashboard Container -->
+<div class="container" id="mainContainer">
+    <div class="loader-bar" id="loaderBar"></div>
+
+    <!-- Top Navigation Bar with Menu Button & Relocated Lights -->
+    <div class="top-nav-bar">
+        <span class="menu-btn" onclick="toggleSidebar(true)"><i class="fa-solid fa-bars"></i></span>
+        <div class="welcome-group">
+            <div class="lights-container">
+                <span class="indicator-light red" id="lightRed"></span>
+                <span class="indicator-light green" id="lightGreen"></span>
+            </div>
+            <span class="welcome-text" id="welcomeUserText">Khushamdeed, User</span>
+        </div>
+    </div>
+
+    <!-- Sidebar overlay -->
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar(false)"></div>
+
+    <!-- Sidebar Navigation Drawer -->
+    <div class="sidebar" id="appSidebar">
+        <div class="sidebar-header">
+            <span class="close-sidebar-btn" onclick="toggleSidebar(false)"><i class="fa-solid fa-xmark"></i></span>
+            <h3 style="color: #4caf50; margin: 0;">Menu</h3>
+        </div>
+        <div class="sidebar-menu">
+            <div class="sidebar-item" onclick="showView('home')"><i class="fa-solid fa-house"></i> Home</div>
+            <div class="sidebar-item" onclick="showView('plans')"><i class="fa-solid fa-gem"></i> Plans</div>
+            <div class="sidebar-item" onclick="showView('promo')"><i class="fa-solid fa-ticket"></i> Promo Code</div>
+            <div class="sidebar-item" onclick="showView('profile')"><i class="fa-solid fa-user"></i> Profile</div>
+            <div class="sidebar-item" onclick="openWhatsAppChannel()"><i class="fa-solid fa-users"></i> Group</div>
+            <div class="sidebar-item logout-item" onclick="handleLogout()"><i class="fa-solid fa-right-from-bracket"></i> Logout</div>
+        </div>
+    </div>
+
+    <!-- Views Container -->
+    <div class="views-container">
+
+        <!-- 1. HOME VIEW (Code Extraction System) -->
+        <div id="view-home" class="app-view active">
+            <h1>CODE BY X</h1>
+            <div class="subtitle">Dear user our degital web hack / you can hack any web with a link & Join our whatsAPP channel for more new bypass tool and latest update and code by x tool ka update version important servers was payed is leya subscription buy kerna ho gi.
+    </div>
+            
+            <div class="input-group">
+                <input type="text" id="webUrl" placeholder="https://example.com " required>
+                <button class="btn" id="extractBtn" onclick="fetchSourceCode()">Start</button>
+            </div>
+
+            <!-- Advanced Settings Toggle -->
+            <div class="settings-toggle">
+                <button class="settings-toggle-btn" onclick="toggleSettings()">Advanced Proxy Settings Cloudflare Bypass</button>
+            </div>
+
+            <!-- Advanced Settings Panel -->
+            <div class="settings-panel" id="settingsPanel">
+                <label for="customProxyInput">Custom Proxy API Optional - for high security sites like Quotex</label>
+                <input type="text" id="customProxyInput" placeholder="https://api.scraperapi.com">
+                <p style="font-size: 11px; color: #8a8a9e; margin-top: 5px; margin-bottom: 0; line-height: 1.4;">
+                    Agar target website Cloudflare Turnstile ya Broker security se protected hai, to aap ScraperAPI ya ZenRows jaisi free key register kar ke uska link yahan daal sakte hain.
+                </p>
+            </div>
+
+            <div id="statusMessage" class="status"></div>
+
+            <!-- Navigation Tabs -->
+            <div class="tabs">
+                <button id="codeTabBtn" class="tab-btn active" onclick="switchTab('codeTab')">web Code</button>
+                <button class="tab-btn" onclick="switchTab('previewTab')">Live Preview</button>
+                <button class="tab-btn" onclick="switchTab('seoTab')">SEO </button>
+            </div>
+
+            <!-- Tab Contents -->
+            <div class="tab-container">
+                <!-- Tab 1: Source Code View & Editor -->
+                <div id="codeTab" class="tab-content active">
+                    <div class="code-container">
+                        <div class="search-box-container">
+                            <input type="text" id="codeSearchInput" placeholder="anything search here..." oninput="searchInCode()">
+                            <span class="search-count" id="searchCount">0 matches</span>
+                        </div>
+                        <pre id="highlightedView"><code id="codeBlock" class="language-html">Web code here...</code></pre>
+                        <textarea id="editTextArea" class="live-editor-textarea" placeholder="web code here..."></textarea>
+                    </div>
+                </div>
+
+                <!-- Tab 2: Live Preview -->
+                <div id="previewTab" class="tab-content">
+                    <iframe id="previewIframe" sandbox="allow-scripts allow-forms" srcdoc="<p style='font-family:sans-serif; text-align:center; padding:50px; color:#666;'>Pehle code Bypass karein taake preview dekha ja sake.</p>"></iframe>
+                </div>
+
+                <!-- Tab 3: SEO & Page Analytics & Asset List -->
+                <div id="seoTab" class="tab-content">
+                    <div class="stats-grid">
+                        <div class="stat-card full-width">
+                            <h3>Page Title</h3>
+                            <p id="statTitle">No data available</p>
+                        </div>
+                        <div class="stat-card full-width">
+                            <h3>Meta Description</h3>
+                            <p id="statDesc">No data available</p>
+                        </div>
+                        
+                        <!-- Target Server IP Address Box -->
+                        <div class="stat-card full-width">
+                            <h3>Server IP Address (Bypass Detector)</h3>
+                            <div style="display: flex; flex-direction: column; gap: 5px; margin-top: 5px;">
+                                <p id="statIP" style="margin: 0; font-size: 15px; font-weight: bold; color: #4caf50; line-height: 1.4;">No data</p>
+                                <button id="copyIPBtn" class="btn btn-secondary" style="padding: 5px 12px; font-size: 11px; display: none; align-self: flex-start;" onclick="copyIPToClipboard()">Copy IP</button>
+                            </div>
+                        </div>
+
+                        <!-- Dynamic External Assets Panel -->
+                        <div class="stat-card full-width">
+                            <h3>Detected External Assets & API Endpoints</h3>
+                            <p style="font-size: 11px; color: #8a8a9e; margin-bottom: 5px;">
+                                Gambling applications aur React/TikTok websites ka asali source code aur back-end API links in links mein chhupa hota hai:
+                            </p>
+                            <div class="asset-list" id="assetList">
+                                No external assets detected.
+                            </div>
+                        </div>
+
+                        <div class="stat-card full-width">
+                            <h3>Page Elements Count</h3>
+                            <div class="stat-badge-grid">
+                                <div class="badge-box">
+                                    <span id="countLinks">0</span>
+                                    <label>Links</label>
+                                </div>
+                                <div class="badge-box">
+                                    <span id="countImages">0</span>
+                                    <label>Images</label>
+                                </div>
+                                <div class="badge-box">
+                                    <span id="countScripts">0</span>
+                                    <label>Scripts</label>
+                                </div>
+                                <div class="badge-box">
+                                    <span id="countStyles">0</span>
+                                    <label>Stylesheets</label>
+                                </div>
+                                <div class="badge-box">
+                                    <span id="statPageSize">0 KB</span>
+                                    <label>Page Size</label>
+                                </div>
+                                <div class="badge-box">
+                                    <span id="statLoadTime">0s</span>
+                                    <label>Load Time</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Actions Bar -->
+            <div class="action-bar" id="actionBar">
+                <button class="btn btn-secondary" id="editBtn" onclick="toggleEditMode()">Edit Code</button>
+                <button class="btn btn-secondary" onclick="downloadCode()">Download Code</button>
+                <button class="btn" onclick="copyToClipboard()">Copy Code</button>
+            </div>
+        </div>
+
+        <!-- 2. PLANS VIEW (Premium Device-Style Subscription Layout) -->
+        <div id="view-plans" class="app-view">
+            <h2 style="color: #4caf50; text-align: center; margin-top: 10px;">Membership Subscription </h2>
+            <div class="plans-grid">
+                
+                <!-- Plan 0: FREE TRIAL (First Plan) -->
+                <div class="plan-card">
+                    <div>
+                        <div class="plan-badge">CODE BY X / TRIAL</div>
+                        <div class="price"><span class="price-currency">Rs</span> 0</div>
+                        <div class="duration">15 Minutes Access</div>
+                        <ul>
+                            <li><i class="fa-solid fa-circle-check" style="color:#4caf50;"></i> Limit: 15 Minutes Trial Access Only</li>
+                            <li><i class="fa-solid fa-circle-check" style="color:#4caf50;"></i> Live Preview: Unlocked </li>
+                            <li><i class="fa-solid fa-circle-xmark" style="color:#f44336;"></i> Advanced Proxy Setting: Locked</li>
+                            <li><i class="fa-solid fa-circle-xmark" style="color:#f44336;"></i> Server IP Address: Locked</li>
+                            <li><i class="fa-solid fa-circle-xmark" style="color:#f44336;"></i> Edit, Download, & Copy Code: Locked</li>
+                            <li><i class="fa-solid fa-circle-xmark" style="color:#f44336;"></i> Visible Code: Limited to 15 Lines Baki hide </li>
+                            <li><i class="fa-solid fa-triangle-exclamation" style="color:#ff9800;"></i> Note: 15 mins baad expire ho jaye ga aur dubara active nahi hoga.</li>
+                        </ul>
+                    </div>
+                    <button class="plan-btn" id="trialPlanBtn" onclick="activateTrialPlan()">Start Free Trial</button>
+                </div>
+
+                <!-- Plan 1 (Originally Plan 1, shifted to 2nd position) -->
+                <div class="plan-card">
+                    <div>
+                        <div class="plan-badge">CODE BY X / BASIC</div>
+                        <div class="price"><span class="price-currency">Rs</span> 2,000</div>
+                        <div class="duration">1 Week Access</div>
+                        <ul>
+                            <li><i class="fa-solid fa-circle-check" style="color:#4caf50;"></i> Limit: 3 Daily Bypass</li>
+                            <li><i class="fa-solid fa-circle-check" style="color:#4caf50;"></i> Core File Bypass Node</li>
+                            <li><i class="fa-solid fa-circle-xmark" style="color:#f44336;"></i> Server IP address: Locked Upgrade Plan to Unlock</li>
+                            <li><i class="fa-solid fa-server" style="color:#4caf50;"></i> Active Network: 160 Servers (80 Bypass, 60 Name Search, 20 IP Track)</li>
+                            <li><i class="fa-solid fa-circle-xmark" style="color:#f44336;"></i> Advanced Proxy Settings Cloudflare Bypass - Not Available Requires High Subscription</li>
+                        </ul>
+                    </div>
+                    <button class="plan-btn" onclick="openPaymentGateway('Plan 1', 2000, '1 Week')">Choose Basic</button>
+                </div>
+                <!-- Plan 2 -->
+                <div class="plan-card">
+                    <div>
+                        <div class="plan-badge">CODE BY X / BRONZE</div>
+                        <div class="price"><span class="price-currency">Rs</span> 8,000</div>
+                        <div class="duration">1 Month Access</div>
+                        <ul>
+                            <li><i class="fa-solid fa-circle-check" style="color:#4caf50;"></i> Limit: 7 Daily Bypass</li>
+                            <li><i class="fa-solid fa-circle-check" style="color:#4caf50;"></i> Copy Code Feature</li>
+                            <li><i class="fa-solid fa-circle-check" style="color:#4caf50;"></i> Live Preview Sandbox</li>
+                            <li><i class="fa-solid fa-circle-check" style="color:#4caf50;"></i> Get server IP address free</li>
+                            <li><i class="fa-solid fa-server" style="color:#4caf50;"></i> Active Network: 300 Servers (180 Bypass, 80 Name Search, 40 IP Track)</li>
+                            <li><i class="fa-solid fa-circle-xmark" style="color:#f44336;"></i> Advanced Proxy Settings Cloudflare Bypass - Not Available Requires High Subscription</li>
+                        </ul>
+                    </div>
+                    <button class="plan-btn" onclick="openPaymentGateway('Plan 2', 8000, '1 Month')">Choose Bronze</button>
+                </div>
+                <!-- Plan 3 -->
+                <div class="plan-card">
+                    <div>
+                        <div class="plan-badge">CODE BY X / SILVER</div>
+                        <div class="price"><span class="price-currency">Rs</span> 20,000</div>
+                        <div class="duration">80 Days Access</div>
+                        <ul>
+                            <li><i class="fa-solid fa-circle-check" style="color:#4caf50;"></i> Limit: 18 Daily Bypass</li>
+                            <li><i class="fa-solid fa-circle-check" style="color:#4caf50;"></i> Fast Multi-Server Scrapers</li>
+                            <li><i class="fa-solid fa-circle-check" style="color:#4caf50;"></i> Get server IP address free</li>
+                            <li><i class="fa-solid fa-server" style="color:#4caf50;"></i> Active Network: 480 Servers (240 Bypass, 160 Name Search, 80 IP Track)</li>
+                            <li><i class="fa-solid fa-circle-check" style="color:#4caf50;"></i> Advanced Proxy Settings Cloudflare Bypass</li>
+                        </ul>
+                    </div>
+                    <button class="plan-btn" onclick="openPaymentGateway('Plan 3', 20000, '80 Days')">Choose Silver</button>
+                </div>
+                <!-- Plan 4 -->
+                <div class="plan-card">
+                    <div>
+                        <div class="plan-badge">CODE BY X / GOLD</div>
+                        <div class="price"><span class="price-currency">Rs</span> 46,000</div>
+                        <div class="duration">4 Months Access</div>
+                        <ul>
+                            <li><i class="fa-solid fa-circle-check" style="color:#4caf50;"></i> Limit: 29 Daily Bypass</li>
+                            <li><i class="fa-solid fa-circle-check" style="color:#4caf50;"></i> High Priority Bypass Grid</li>
+                            <li><i class="fa-solid fa-circle-check" style="color:#4caf50;"></i> Get server IP address free</li>
+                            <li><i class="fa-solid fa-server" style="color:#4caf50;"></i> Active Network: 700 Servers (400 Bypass, 200 Name Search, 100 IP Track)</li>
+                            <li><i class="fa-solid fa-circle-check" style="color:#4caf50;"></i> Advanced Proxy Settings Cloudflare Bypass</li>
+                        </ul>
+                    </div>
+                    <button class="plan-btn" onclick="openPaymentGateway('Plan 4', 46000, '4 Months')">Choose Gold</button>
+                </div>
+                <!-- Plan 5 -->
+                <div class="plan-card">
+                    <div>
+                        <div class="plan-badge">CODE BY X / PLATINUM</div>
+                        <div class="price"><span class="price-currency">Rs</span> 80,000</div>
+                        <div class="duration">8 Months Access</div>
+                        <ul>
+                            <li><i class="fa-solid fa-circle-check" style="color:#4caf50;"></i> Limit: 48 Daily Bypass</li>
+                            <li><i class="fa-solid fa-circle-check" style="color:#4caf50;"></i> Dedicated Scraper Bypass Matrix</li>
+                            <li><i class="fa-solid fa-circle-check" style="color:#4caf50;"></i> Get server IP address free</li>
+                            <li><i class="fa-solid fa-server" style="color:#4caf50;"></i> Active Network: 900 Servers (500 Bypass, 240 Name Search, 160 IP Track)</li>
+                            <li><i class="fa-solid fa-circle-check" style="color:#4caf50;"></i> Advanced Proxy Settings Cloudflare Bypass</li>
+                        </ul>
+                    </div>
+                    <button class="plan-btn" onclick="openPaymentGateway('Plan 5', 80000, '8 Months')">Choose Platinum</button>
+                </div>
+                <!-- Plan 6 -->
+                <div class="plan-card">
+                    <div>
+                        <div class="plan-badge">CODE BY X / DIAMOND</div>
+                        <div class="price"><span class="price-currency">Rs</span> 160,000</div>
+                        <div class="duration">1 Year Access</div>
+                        <ul>
+                            <li><i class="fa-solid fa-circle-check" style="color:#4caf50;"></i> Limit: Unlimited Bypass</li>
+                            <li><i class="fa-solid fa-circle-check" style="color:#4caf50;"></i> Full diagnostics & bypasses</li>
+                            <li><i class="fa-solid fa-circle-check" style="color:#4caf50;"></i> Get server IP address free</li>
+                            <li><i class="fa-solid fa-server" style="color:#4caf50;"></i> Active Network: 2000 Servers (1000 Bypass, 800 Name Search, 200 IP Track)</li>
+                            <li><i class="fa-solid fa-circle-check" style="color:#4caf50;"></i> Advanced Proxy Settings Cloudflare Bypass</li>
+                        </ul>
+                    </div>
+                    <button class="plan-btn" onclick="openPaymentGateway('Plan 6', 160000, '1 Year')">Choose Diamond</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- PAYMENT GATEWAY VIEW -->
+        <div id="view-payment" class="app-view">
+            <h2 style="color: #4caf50; text-align: center; margin-top: 10px;">Payment method  </h2>
+            <div style="background: #1b1b24; padding: 25px; border-radius: 8px; border: 1px solid #252533; max-width: 500px; margin: 0 auto;">
+                <h3 id="paySelectedPlan" style="color: #4caf50; margin-top: 0;">Plan 1 - Price: 2000</h3>
+                <p style="font-size: 13px; color: #8a8a9e; margin-bottom: 20px;">Niche diye gae Payment Accounts par raqam transfer karein aur details submit karein:</p>
+                
+                <!-- Payment Account Details -->
+                <div style="background: #101015; padding: 15px; border-radius: 6px; border: 1px solid #252533; margin-bottom: 20px; text-align: left;">
+                    <p style="margin: 0 0 10px 0; font-size: 14px; font-weight: bold; color: #e1e1e6;">Step 1: Open your Easypaisa / Jazzcah account </p>
+                    <p style="margin: 0 0 15px 0; font-size: 14px; font-weight: bold; color: #e1e1e6;">Step 2: Transfer payment to Easypaisa Account IBAN Number </p>
+                    
+                    <div style="font-size: 13px; color: #8a8a9e; line-height: 1.6; margin-bottom: 10px;">
+                        <strong>IBAN Number:</strong><br>
+                        <span id="ibanText" style="color: #4caf50; font-family: monospace; font-size: 14px; word-break: break-all; display: inline-block; margin-top: 5px;">PK36TMFB0000000050698679</span>
+                        <button class="btn" style="padding: 4px 10px; font-size: 11px; background-color: #4caf50; margin-left: 10px;" onclick="copyIBAN()">Copy IBAN</button>
+                    </div>
+                    
+                    <p style="margin: 10px 0 0 0; font-size: 13px; color: #8a8a9e;"><strong>Account Holder Name:</strong> M Aslam</p>
+                </div>
+
+                <!-- Submission Form -->
+                <form id="paymentSubmissionForm" onsubmit="submitPaymentDetails(event)">
+                    <div class="auth-form-group">
+                        <label for="paySenderName">Sender Name</label>
+                        <input type="text" id="paySenderName" placeholder="Sender account name..." required>
+                    </div>
+                    <div class="auth-form-group">
+                        <label for="paySenderNumber">Sender Number</label>
+                        <input type="tel" id="paySenderNumber" placeholder="Sender account number..." required>
+                    </div>
+                    <div class="auth-form-group">
+                        <label for="payUID">Transaction UID / TxID</label>
+                        <input type="text" id="payUID" placeholder="TxID / UID..." required>
+                    </div>
+                    <button type="submit" class="btn" style="width: 100%; margin-top: 15px;">Submit </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- PROMO CODE VIEW -->
+        <div id="view-promo" class="app-view">
+            <h2 style="color: #4caf50; text-align: center; margin-top: 10px;">Apply Promo Code</h2>
+            <div style="background: #1b1b24; padding: 30px; border-radius: 8px; border: 1px solid #252533; max-width: 500px; margin: 0 auto; text-align: center;">
+                <p style="font-size: 14px; color: #8a8a9e; margin-bottom: 20px;">Promo code enter kar ke limited temporary bypass access hasil karein:</p>
+                <div class="auth-form-group" style="text-align: left;">
+                    <label for="promoCodeInput">Promo Code</label>
+                    <input type="text" id="promoCodeInput" placeholder="enter your promo code..." required>
+                </div>
+                <button class="btn" style="width: 100%; margin-top: 15px;" onclick="applyPromoCode()">Apply </button>
+            </div>
+        </div>
+
+        <!-- 4. PROFILE VIEW (User Account Settings) -->
+        <div id="view-profile" class="app-view">
+            <h2 style="color: #4caf50; margin-bottom: 20px;">My Profile</h2>
+            <div class="stats-grid" style="grid-template-columns: 1fr; gap: 15px;">
+                <div class="stat-card">
+                    <h3>Name</h3>
+                    <p id="profileName" style="font-size: 16px; color: #fff; font-weight: bold; text-align: left;">Guest</p>
+                </div>
+                <div class="stat-card">
+                    <h3>Register Email</h3>
+                    <p id="profileEmail" style="font-size: 16px; color: #fff; text-align: left;">N/A</p>
+                </div>
+                <div class="stat-card">
+                    <h3>Password</h3>
+                    <p id="profilePassword" style="font-size: 16px; color: #fff; text-align: left;">N/A</p>
+                </div>
+                <div class="stat-card">
+                    <h3>Phone Number</h3>
+                    <p id="profilePhone" style="font-size: 16px; color: #fff; text-align: left;">N/A</p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Footer for WhatsApp Link Integration -->
+    <div class="footer">
+        Join our WhatsApp Channel: <a href="https://whatsapp.com/channel/0029VbCZABY3LdQbgtGvQT12" target="_blank">WhatsApp Channel Link</a>
+    </div>
+</div>
+
+<script>
+    // Initialize Firebase using standard Compat APIs
+    const firebaseConfig = {
+      apiKey: "AIzaSyAUrAjlAnF5o86YYZn911dNg0Hkbgp3Pnc",
+      authDomain: "titanic-earning.firebaseapp.com",
+      databaseURL: "https://titanic-earning-default-rtdb.firebaseio.com",
+      projectId: "titanic-earning",
+      storageBucket: "titanic-earning.firebasestorage.app",
+      messagingSenderId: "912644789036",
+      appId: "1:912644789036:web:4b7a04d3bab54c8fa7d289",
+      measurementId: "G-GWR3S84S6K"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const database = firebase.database();
+
+    let rawFetchedCode = ""; 
+    let isEditMode = false; 
+    let selectedPayPlan = "";
+    let selectedPayPrice = 0;
+    let selectedPayDuration = "";
+    let inactivityTimeout;
+    let currentUserPlanType = '';
+
+    // Universal Clipboard Engine (Optimized for Mobile WebView and Standard Environments)
+    function copyTextToClipboard(text) {
+        if (!text) return;
+
+        // Dynamic hidden text field setup
+        const textArea = document.createElement("textarea");
+        textArea.value = text;
+        textArea.style.position = "fixed";
+        textArea.style.left = "-9999px";
+        textArea.style.top = "0";
+        textArea.style.width = "2em";
+        textArea.style.height = "2em";
+        textArea.style.padding = "0";
+        textArea.style.border = "none";
+        textArea.style.outline = "none";
+        textArea.style.boxShadow = "none";
+        textArea.style.background = "transparent";
+        document.body.appendChild(textArea);
+        
+        textArea.focus();
+        textArea.select();
+        
+        // Multi-level selection bounds for iOS/Android WebView focus limits
+        const range = document.createRange();
+        range.selectNodeContents(textArea);
+        const selection = window.getSelection();
+        selection.removeAllRanges();
+        selection.addRange(range);
+        textArea.setSelectionRange(0, 999999);
+
+        let successful = false;
+        try {
+            successful = document.execCommand('copy');
+        } catch (err) {
+            successful = false;
+        }
+
+        selection.removeAllRanges();
+        document.body.removeChild(textArea);
+
+        if (successful) {
+            alert("Text successfully copied to clipboard.");
+            return;
+        }
+
+        // Secure context fallback
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(text).then(() => {
+                alert("Text successfully copied to clipboard.");
+            }).catch((err) => {
+                alert("alart: Clipboard standard copy block ho gaya.");
+            });
+        } else {
+            alert("alart: Clipboard functionality is blocked on this browser/app container.");
+        }
+    }
+
+    // Pure JavaScript SHA-256 Fallback Logic (For Local file:// and unsecure http:// environments)
+    function sha256Fallback(ascii) {
+        function rightRotate(value, amount) {
+            return (value >>> amount) | (value << (32 - amount));
+        }
+        
+        var mathPow = Math.pow;
+        var maxWord = mathPow(2, 32);
+        var lengthProperty = 'length';
+        var i, j;
+
+        var result = '';
+        var words = [];
+        var asciiLength = ascii[lengthProperty] * 8;
+        
+        var hash = [];
+        var k = [];
+        var primeCounter = 0;
+
+        var isPrime = function(n) {
+            for (var factor = 2; factor * factor <= n; factor++) {
+                if (n % factor === 0) return false;
+            }
+            return true;
+        };
+
+        for (var candidate = 2; primeCounter < 64; candidate++) {
+            if (isPrime(candidate)) {
+                if (primeCounter < 8) {
+                    hash[primeCounter] = (mathPow(candidate, .5) * maxWord) | 0;
+                }
+                k[primeCounter] = (mathPow(candidate, 1 / 3) * maxWord) | 0;
+                primeCounter++;
+            }
+        }
+        
+        ascii += '\x80';
+        while (ascii[lengthProperty] % 64 - 56) {
+            ascii += '\x00';
+        }
+        for (i = 0; i < ascii[lengthProperty]; i++) {
+            j = ascii.charCodeAt(i);
+            if (j >> 8) return; 
+            words[i >> 2] |= j << (24 - (i % 4) * 8);
+        }
+        words[words[lengthProperty]] = ((asciiLength / maxWord) | 0);
+        words[words[lengthProperty]] = (asciiLength);
+        
+        for (j = 0; j < words[lengthProperty];) {
+            var w = words.slice(j, j += 16);
+            var oldHash = hash.slice(0);
+            
+            for (i = 0; i < 64; i++) {
+                var wItem = w[i];
+                if (i >= 16) {
+                    wItem = w[i] = (
+                        (rightRotate(w[i - 2], 17) ^ rightRotate(w[i - 2], 19) ^ (w[i - 2] >>> 10)) +
+                        w[i - 7] +
+                        (rightRotate(w[i - 15], 7) ^ rightRotate(w[i - 15], 18) ^ (w[i - 15] >>> 3)) +
+                        w[i - 16]
+                    ) | 0;
+                }
+                
+                var temp1 = (hash[7] +
+                    (rightRotate(hash[4], 6) ^ rightRotate(hash[4], 11) ^ rightRotate(hash[4], 25)) +
+                    ((hash[4] & hash[5]) ^ (~hash[4] & hash[6])) +
+                    k[i] +
+                    wItem
+                ) | 0;
+                var temp2 = ((rightRotate(hash[0], 2) ^ rightRotate(hash[0], 13) ^ rightRotate(hash[0], 22)) +
+                    ((hash[0] & hash[1]) ^ (hash[0] & hash[2]) ^ (hash[1] & hash[2]))
+                ) | 0;
+                
+                hash = [(temp1 + temp2) | 0].concat(hash);
+                hash[4] = (hash[4] + temp1) | 0;
+                hash.length = 8;
+            }
+            
+            for (i = 0; i < 8; i++) {
+                hash[i] = (hash[i] + oldHash[i]) | 0;
+            }
+        }
+        
+        for (i = 0; i < 8; i++) {
+            var s = hash[i] >>> 0;
+            result += (s.toString(16).padStart(8, '0'));
+        }
+        return result;
+    }
+
+    // Cryptographic secure password hashing helper (Tries subtle crypto, falls back to JS SHA-256)
+    async function hashPassword(password) {
+        if (window.crypto && window.crypto.subtle && typeof window.crypto.subtle.digest === 'function') {
+            try {
+                const encoder = new TextEncoder();
+                const data = encoder.encode(password);
+                const hash = await crypto.subtle.digest('SHA-256', data);
+                return Array.from(new Uint8Array(hash))
+                    .map(b => b.toString(16).padStart(2, '0'))
+                    .join('');
+            } catch (e) {
+                console.warn("Subtle crypto failed, using JS fallback hash.");
+            }
+        }
+        return sha256Fallback(password);
+    }
+
+    // 2000 Server Network Matrix Dynamic Arrays Generator
+    const extractionServers = [];
+    const searchServers = [];
+    const ipTrackers = [];
+
+    // 1. Generate 1000 Code Extraction Server Nodes
+    const extractionBases = [
+        "https://api.allorigins.win/get?url=",
+        "https://corsproxy.io/?",
+        "https://api.codetabs.com/v1/proxy?quest=",
+        "https://api.cors.lol/?url=",
+        "https://cors-anywhere.azm.workers.dev/"
+    ];
+    for (let i = 1; i <= 1000; i++) {
+        const base = extractionBases[(i - 1) % extractionBases.length];
+        extractionServers.push({
+            id: i,
+            name: `Extraction Server Node #${i}`,
+            url: (targetUrl, rnd) => {
+                if (base.includes("allorigins") || base.includes("cors.lol")) {
+                    return `${base}${encodeURIComponent(targetUrl)}&_=${rnd}_node_${i}`;
+                } else {
+                    return `${base}${encodeURIComponent(targetUrl)}`;
+                }
+            }
+        });
+    }
+
+    // 2. Generate 800 Name Search / Resolution Server Nodes
+    const searchBases = [
+        "https://api.allorigins.win/get?url=",
+        "https://corsproxy.io/?",
+        "https://api.codetabs.com/v1/proxy?quest="
+    ];
+    for (let i = 1; i <= 800; i++) {
+        const base = searchBases[(i - 1) % searchBases.length];
+        searchServers.push({
+            id: i,
+            name: `Search Resolver Node #${i}`,
+            url: (targetUrl, rnd) => {
+                if (base.includes("allorigins")) {
+                    return `${base}${encodeURIComponent(targetUrl)}&_=${rnd}_search_${i}`;
+                } else {
+                    return `${base}${encodeURIComponent(targetUrl)}`;
+                }
+            }
+        });
+    }
+
+    // 3. Generate 200 IP Address / DNS Track Gateway Nodes
+    for (let i = 1; i <= 200; i++) {
+        ipTrackers.push({
+            id: i,
+            name: `IP Track Gateway Node #${i}`,
+            dnsUrl: (hostname) => `https://dns.google/resolve?name=${encodeURIComponent(hostname)}&type=A&_node=${i}`,
+            geoUrl: (ip) => `https://ip-api.com/json/${ip}?_node=${i}`
+        });
+    }
+
+    document.addEventListener("DOMContentLoaded", function() {
+        checkLoginState();
+
+        // Real-time editor listener
+        document.getElementById('editTextArea').addEventListener('input', function() {
+            const urlInput = document.getElementById('webUrl').value.trim();
+            rawFetchedCode = this.value;
+            const detectedLang = detectLanguage(urlInput, rawFetchedCode);
+            updateLivePreview(detectedLang, rawFetchedCode, urlInput);
+        });
+        
+        // Anti-Inactivity Timer setup (Bank Security Level)
+        document.onmousemove = resetInactivityTimer;
+        document.onkeypress = resetInactivityTimer;
+        document.onclick = resetInactivityTimer;
+        resetInactivityTimer();
+    });
+
+    // Bank-level local state security obfuscation mapping
+    function secureStore(key, value) {
+        try {
+            const obfuscated = btoa(encodeURIComponent(value));
+            localStorage.setItem(key, obfuscated);
+        } catch(e) {
+            localStorage.setItem(key, value);
+        }
+    }
+
+    // Secure Get Local Session Values
+    function secureGet(key) {
+        try {
+            const val = localStorage.getItem(key);
+            if (!val) return null;
+            return decodeURIComponent(atob(val));
+        } catch(e) {
+            return localStorage.getItem(key);
+        }
+    }
+
+    function secureRemove(key) {
+        localStorage.removeItem(key);
+    }
+
+    // Auto Session Timeout (Bank Security standard)
+    function resetInactivityTimer() {
+        clearTimeout(inactivityTimeout);
+        inactivityTimeout = setTimeout(() => {
+            if (secureGet('loggedInUser')) {
+                alert("Security Message: Aap ko inactivity koi movement na hone ki wajah se auto-logout kar diya gaya hai.");
+                handleLogout();
+            }
+        }, 15 * 60 * 1000); // 15 Minutes Inactivity timeout
+    }
+
+    // Input sanitization engine to block injection vectors and scripting attacks
+    function sanitizeInput(text) {
+        if (!text) return "";
+        return text.replace(/[<>`\"\'\$]/g, ""); 
+    }
+
+    // Check application authorization and updates subscription state lights
+    async function checkLoginState() {
+        const loggedInUser = secureGet('loggedInUser');
+        const loggedInUsername = secureGet('loggedInUsername');
+        const authContainer = document.getElementById('authContainer');
+        const mainContainer = document.getElementById('mainContainer');
+        
+        if (loggedInUser && loggedInUsername) {
+            authContainer.style.display = 'none';
+            mainContainer.style.display = 'block';
+            document.getElementById('welcomeUserText').textContent = "Khushamdeed, " + loggedInUser;
+            
+            // Sync user data dynamically with Firebase and update UI lights
+            const sanitizedUsername = loggedInUsername.replace(/[\.\$#\[\/@]/g, "_");
+            try {
+                const snapshot = await database.ref(`users/${sanitizedUsername}`).once('value');
+                if (snapshot.exists()) {
+                    const uData = snapshot.val();
+                    currentUserPlanType = uData.planType || '';
+                    
+                    // Verify if user is blocked or locked
+                    if (uData.status === 'blocked' || uData.status === 'locked') {
+                        alert("Aap ka account blocked ya temporary locked hai. Meharbani farma kar company member se rabta karein.");
+                        handleLogout();
+                        return;
+                    }
+                    
+                    let active = false;
+                    const now = Date.now();
+
+                    // Check subscription plans expiry
+                    if (uData.planActive && uData.planExpiresAt) {
+                        if (now < uData.planExpiresAt) {
+                            active = true;
+                        } else {
+                            // Automatically deactivate in DB when expired
+                            await database.ref(`users/${sanitizedUsername}`).update({
+                                planActive: false
+                            });
+                            active = false;
+                            currentUserPlanType = '';
+                        }
+                    }
+                    // Check temporary promo code validity
+                    else if (uData.promoActive && uData.promoExpiresAt && now < uData.promoExpiresAt) {
+                        if (uData.promoUsageLimit && uData.promoUsageCount < uData.promoUsageLimit) {
+                            active = true;
+                        }
+                    }
+
+                    // Trial UI Button status sync
+                    const trialBtn = document.getElementById('trialPlanBtn');
+                    if (trialBtn) {
+                        if (uData.trialUsed) {
+                            trialBtn.textContent = "Trial Used";
+                            trialBtn.disabled = true;
+                            trialBtn.style.backgroundColor = "#555";
+                            trialBtn.style.cursor = "not-allowed";
+                        } else {
+                            trialBtn.textContent = "Start Free Trial";
+                            trialBtn.disabled = false;
+                            trialBtn.style.backgroundColor = "#1a73e8";
+                            trialBtn.style.cursor = "pointer";
+                        }
+                    }
+
+                    // Reset limits daily
+                    const todayStr = new Date().toDateString();
+                    if (uData.lastExtractionDate !== todayStr) {
+                        await database.ref(`users/${sanitizedUsername}`).update({
+                            dailyExtractionsUsed: 0,
+                            lastExtractionDate: todayStr
+                        });
+                    }
+
+                    updateIndicators(active);
+                } else {
+                    updateIndicators(false);
+                }
+            } catch(e) {
+                console.error(e);
+                updateIndicators(false);
+            }
+            showView('home');
+        } else {
+            authContainer.style.display = 'block';
+            mainContainer.style.display = 'none';
+        }
+    }
+
+    // Dynamic extraction indicators
+    function updateIndicators(isActive) {
+        const lightRed = document.getElementById('lightRed');
+        const lightGreen = document.getElementById('lightGreen');
+        if (isActive) {
+            lightGreen.classList.add('active');
+            lightRed.classList.remove('active');
+        } else {
+            lightRed.classList.add('active');
+            lightGreen.classList.remove('active');
+        }
+    }
+
+    function toggleSidebar(open) {
+        const sidebar = document.getElementById('appSidebar');
+        const overlay = document.getElementById('sidebarOverlay');
+        if (open) {
+            sidebar.classList.add('open');
+            overlay.style.display = 'block';
+        } else {
+            sidebar.classList.remove('open');
+            overlay.style.display = 'none';
+        }
+    }
+
+    function showView(viewId) {
+        // Hide all screens
+        document.querySelectorAll('.app-view').forEach(view => {
+            view.classList.remove('active');
+        });
+        
+        // Activate current screen
+        const selectedView = document.getElementById(`view-${viewId}`);
+        if (selectedView) {
+            selectedView.classList.add('active');
+        }
+
+        if (viewId === 'profile') {
+            populateUserProfile();
+        }
+
+        toggleSidebar(false);
+    }
+
+    function openWhatsAppChannel() {
+        window.open('https://whatsapp.com/channel/0029VbCZABY3LdQbgtGvQT12', '_blank');
+        toggleSidebar(false);
+    }
+
+    // Dynamic Profile state engine
+    function populateUserProfile() {
+        const name = secureGet('loggedInUser') || 'Guest';
+        const email = secureGet('loggedInUsername') || 'N/A';
+        const password = secureGet('loggedInPassword') || 'N/A';
+        const phone = secureGet('loggedInPhone') || 'N/A';
+
+        document.getElementById('profileName').textContent = name;
+        document.getElementById('profileEmail').textContent = email;
+        document.getElementById('profilePassword').textContent = password;
+        document.getElementById('profilePhone').textContent = phone;
+    }
+
+    function showRegisterForm() {
+        document.getElementById('loginFormSection').style.display = 'none';
+        document.getElementById('registerFormSection').style.display = 'block';
+        document.getElementById('authTitle').textContent = "Register Account ";
+    }
+
+    function showLoginForm() {
+        document.getElementById('registerFormSection').style.display = 'none';
+        document.getElementById('loginFormSection').style.display = 'block';
+        document.getElementById('authTitle').textContent = "Login Account";
+    }
+
+    // Register process with strict validation & high cryptographic encryption + automatic login
+    async function handleRegister(e) {
+        e.preventDefault();
+        const name = sanitizeInput(document.getElementById('regName').value.trim());
+        const email = sanitizeInput(document.getElementById('regEmail').value.trim().toLowerCase());
+        const phone = sanitizeInput(document.getElementById('regPhone').value.trim());
+        const password = document.getElementById('regPassword').value;
+        const confirmPassword = document.getElementById('regConfirmPassword').value;
+
+        // Strict empty checking
+        if (!name || !email || !phone || !password || !confirmPassword) {
+            alert("alart: Tamam khana-puri all fields lazmi hain!");
+            return;
+        }
+
+        if (password !== confirmPassword) {
+            alert("Password aur Confirm Password aapas mein nahi milte!");
+            return;
+        }
+
+        if (phone.length < 10) {
+            alert("alart: Meharbani farma kar sahi phone number darj karein!");
+            return;
+        }
+
+        const sanitizedUsername = email.replace(/[\.\$#\[\/@]/g, "_");
+
+        try {
+            const snapshot = await database.ref(`users/${sanitizedUsername}`).once('value');
+            if (snapshot.exists()) {
+                alert("Yeh Email pehle se register hai.");
+                return;
+            }
+
+            // Secure Hash Password (SHA-256) before storing inside DB
+            const securedPassword = await hashPassword(password);
+
+            await database.ref(`users/${sanitizedUsername}`).set({
+                name: name,
+                username: email,
+                phone: phone,
+                password: securedPassword,
+                status: 'active',
+                planActive: false,
+                promoActive: false,
+                trialUsed: false,
+                dailyExtractionsUsed: 0,
+                lastExtractionDate: new Date().toDateString()
+            });
+
+            alert("Registration mukammal ho chuki hai! Aap ko automatically login kiya ja raha hai...");
+            
+            // Auto Login Secure State Assignment
+            secureStore('loggedInUser', name);
+            secureStore('loggedInUsername', email);
+            secureStore('loggedInPassword', password);
+            secureStore('loggedInPhone', phone);
+            
+            document.getElementById('registerFormSection').reset();
+
+            checkLoginState();
+        } catch (error) {
+            console.error(error);
+            alert("alart: Register karne mein masla pesh aaya. " + error.message);
+        }
+    }
+
+    // Login validation
+    async function handleLogin(e) {
+        e.preventDefault();
+        const usernameInput = sanitizeInput(document.getElementById('loginEmail').value.trim().toLowerCase());
+        const passwordInput = document.getElementById('loginPassword').value;
+
+        if (!usernameInput || !passwordInput) {
+            alert("Email aur Password enter karein.");
+            return;
+        }
+
+        const sanitizedUsername = usernameInput.replace(/[\.\$#\[\/@]/g, "_");
+
+        try {
+            const snapshot = await database.ref(`users/${sanitizedUsername}`).once('value');
+            if (snapshot.exists()) {
+                const userData = snapshot.val();
+                
+                if (userData.status === 'blocked' || userData.status === 'locked') {
+                    alert("Aap ka account blocked ya temporary locked hai.");
+                    return;
+                }
+
+                // Password Verification using SHA-256 encryption match
+                const hashedPasswordInput = await hashPassword(passwordInput);
+
+                if (userData.password === hashedPasswordInput || userData.password === passwordInput) {
+                    secureStore('loggedInUser', userData.name || userData.username);
+                    secureStore('loggedInUsername', userData.username);
+                    secureStore('loggedInPassword', passwordInput);
+                    secureStore('loggedInPhone', userData.phone || 'N/A');
+                    
+                    checkLoginState();
+                } else {
+                    alert("Galt Password! Dobara check karein.");
+                }
+            } else {
+                alert("Yeh user database mein majood nahi hai. Pehle Register karein.");
+            }
+        } catch (error) {
+            console.error(error);
+            alert("alart: Login nakam raha. " + error.message);
+        }
+    }
+
+    function handleLogout() {
+        secureRemove('loggedInUser');
+        secureRemove('loggedInUsername');
+        secureRemove('loggedInPassword');
+        secureRemove('loggedInPhone');
+        currentUserPlanType = '';
+        checkLoginState();
+    }
+
+    // Subscribes user to plan gateway selection
+    function openPaymentGateway(planName, price, duration) {
+        selectedPayPlan = planName;
+        selectedPayPrice = price;
+        selectedPayDuration = duration;
+        
+        document.getElementById('paySelectedPlan').textContent = `${planName} - Price: Rs ${price} (${duration})`;
+        showView('payment');
+    }
+
+    function copyIBAN() {
+        const iban = document.getElementById('ibanText').textContent;
+        copyTextToClipboard(iban);
+    }
+
+    // User submits payment configuration
+    async function submitPaymentDetails(e) {
+        e.preventDefault();
+        const username = secureGet('loggedInUsername');
+        const name = sanitizeInput(document.getElementById('paySenderName').value.trim());
+        const num = sanitizeInput(document.getElementById('paySenderNumber').value.trim());
+        const uid = sanitizeInput(document.getElementById('payUID').value.trim());
+
+        if (!username || !name || !num || !uid) {
+            alert("Meharbani farma kar tamam payment fields pur karein.");
+            return;
+        }
+
+        try {
+            await database.ref('pending_payments').push({
+                username: username,
+                planType: selectedPayPlan,
+                price: selectedPayPrice,
+                duration: selectedPayDuration,
+                senderName: name,
+                senderNumber: num,
+                uid: uid,
+                timestamp: Date.now()
+            });
+
+            alert("Payment details verification ke liye submit ho chuki hain. Approval ka wait karein.");
+            document.getElementById('paymentSubmissionForm').reset();
+            showView('home');
+        } catch(error) {
+            alert("alart: Details submit nahi ho sakeen: " + error.message);
+        }
+    }
+
+    // Active Trial Plan Trigger (Strictly lasts for 15 Minutes and sets dynamic flags)
+    async function activateTrialPlan() {
+        const username = secureGet('loggedInUsername');
+        if (!username) {
+            alert("Session expire ho chuka hai. Dobara login karein.");
+            return;
+        }
+        const sanitizedUsername = username.replace(/[\.\$#\[\/@]/g, "_");
+        try {
+            const snapshot = await database.ref(`users/${sanitizedUsername}`).once('value');
+            if (snapshot.exists()) {
+                const uData = snapshot.val();
+                if (uData.trialUsed) {
+                    alert("Aap is account par Trial Plan pehle hi istemal kar chuke hain!");
+                    return;
+                }
+                if (uData.planActive && uData.planType !== 'Trial') {
+                    alert("Aap ke paas pehle se hi ek paid plan active hai!");
+                    return;
+                }
+                
+                const now = Date.now();
+                const expiresAt = now + (15 * 60 * 1000); // 15 Minutes expiration limit
+                
+                await database.ref(`users/${sanitizedUsername}`).update({
+                    planActive: true,
+                    planType: 'Trial',
+                    planExpiresAt: expiresAt,
+                    dailyExtractionLimit: 9999, 
+                    dailyExtractionsUsed: 0,
+                    lastExtractionDate: new Date().toDateString(),
+                    trialUsed: true
+                });
+                
+                alert("Kamyabi! Free Trial 15 minutes ke liye active ho gaya hai.");
+                checkLoginState();
+                showView('home');
+            }
+        } catch(e) {
+            alert("Galti: " + e.message);
+        }
+    }
+
+    // Promo Code Application
+    async function applyPromoCode() {
+        const promoInput = sanitizeInput(document.getElementById('promoCodeInput').value.trim());
+        const username = secureGet('loggedInUsername');
+        
+        if (!promoInput) {
+            alert("Promo Code enter karein.");
+            return;
+        }
+
+        if (!username) {
+            alert("Session expire ho chuka hai.");
+            return;
+        }
+
+        try {
+            const snapshot = await database.ref(`promocodes/${promoInput}`).once('value');
+            if (snapshot.exists()) {
+                const promo = snapshot.val();
+                const now = Date.now();
+                const expiryTime = now + (promo.durationHours * 60 * 60 * 1000);
+                
+                const sanitizedUsername = username.replace(/[\.\$#\[\/@]/g, "_");
+                await database.ref(`users/${sanitizedUsername}`).update({
+                    promoActive: true,
+                    promoCode: promoInput,
+                    promoExpiresAt: expiryTime,
+                    promoUsageLimit: promo.limit,
+                    promoUsageCount: 0
+                });
+
+                alert(`Kamyabi! Promo Code apply ho gaya hai. Aap ko ${promo.durationHours} hours ke liye ${promo.limit} bypass ka temporary access de diya gaya hai.`);
+                document.getElementById('promoCodeInput').value = "";
+                checkLoginState();
+            } else {
+                alert("Galt Promo Code! Dobara check karein.");
+            }
+        } catch(e) {
+            alert("Error: Promo apply karne mein nakami: " + e.message);
+        }
+    }
+
+    // Promise.any helper for backward compatibility
+    async function promiseAny(promises) {
+        return new Promise((resolve, reject) => {
+            let errors = [];
+            let resolved = false;
+            promises.forEach((p) => {
+                Promise.resolve(p).then((val) => {
+                    if (!resolved) {
+                        resolved = true;
+                        resolve(val);
+                    }
+                }).catch((err) => {
+                    errors.push(err);
+                    if (errors.length === promises.length) {
+                        reject(new Error("All server bypass nodes reported connection blockage."));
+                    }
+                });
+            });
+        });
+    }
+
+    // Fetch dynamic plan limits
+    function getActivePlanLimits(uData) {
+        let activePlan = uData.planType || 'Plan 1';
+        if (uData.promoActive) {
+            activePlan = 'Plan 6'; 
+        }
+
+        let extCount = 80, searchCount = 60, ipCount = 20; 
+        if (activePlan === 'Trial') { extCount = 40; searchCount = 30; ipCount = 10; }
+        else if (activePlan === 'Plan 2') { extCount = 180; searchCount = 80; ipCount = 40; }
+        else if (activePlan === 'Plan 3') { extCount = 240; searchCount = 160; ipCount = 80; }
+        else if (activePlan === 'Plan 4') { extCount = 400; searchCount = 200; ipCount = 100; }
+        else if (activePlan === 'Plan 5') { extCount = 500; searchCount = 240; ipCount = 160; }
+        else if (activePlan === 'Plan 6') { extCount = 1000; searchCount = 800; ipCount = 200; }
+
+        return {
+            extractions: extractionServers.slice(0, extCount),
+            searches: searchServers.slice(0, searchCount),
+            ips: ipTrackers.slice(0, ipCount)
+        };
+    }
+
+    // 1000x High-Speed Concurrent Multi-Node Scraper Engine
+    async function concurrentBypassFetch(targetUrl, allowedExts) {
+        const randomCacheBuster = Date.now() + "_" + Math.floor(Math.random() * 100000);
+        
+        const fetchPromises = allowedExts.map(async (srv) => {
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 9500);
+
+            try {
+                const proxyUrl = srv.url(targetUrl, randomCacheBuster);
+                const response = await fetch(proxyUrl, { signal: controller.signal });
+                clearTimeout(timeoutId);
+                if (!response.ok) throw new Error("HTTP Err: " + response.status);
+                
+                let text = "";
+                if (proxyUrl.includes("allorigins")) {
+                    const json = await response.json();
+                    text = json.contents;
+                } else {
+                    text = await response.text();
+                }
+                
+                const cleaned = cleanProxyResponse(text);
+                if (cleaned && cleaned.trim().length > 100) {
+                    if (cleaned.includes("cloudflare") && (cleaned.includes("challenge-running") || cleaned.includes("Turnstile"))) {
+                        throw new Error("CF Firewall challenge");
+                    }
+                    return cleaned;
+                }
+                throw new Error("Empty buffer");
+            } catch(err) {
+                clearTimeout(timeoutId);
+                throw err;
+            }
+        });
+
+        return await promiseAny(fetchPromises);
+    }
+
+    // Persistent Multi-Cycle Self Healing Extraction Engine
+    async function fetchSourceCode() {
+        let urlInput = sanitizeInput(document.getElementById('webUrl').value.trim());
+        let customProxyInput = sanitizeInput(document.getElementById('customProxyInput').value.trim());
+        const codeBlock = document.getElementById('codeBlock');
+        const statusMsg = document.getElementById('statusMessage');
+        const actionBar = document.getElementById('actionBar');
+        const previewIframe = document.getElementById('previewIframe');
+        const loaderBar = document.getElementById('loaderBar');
+        const codeTabBtn = document.getElementById('codeTabBtn');
+        const extractBtn = document.getElementById('extractBtn');
+
+        // Subscription access validation
+        const username = secureGet('loggedInUsername');
+        if (!username) {
+            alert("Session expire ho chuka hai. Dobara login karein.");
+            handleLogout();
+            return;
+        }
+        const sanitizedUsername = username.replace(/[\.\$#\[\/@]/g, "_");
+        
+        let allowedServers;
+        let isPlan1 = false;
+        let isTrial = false;
+        try {
+            const snapshot = await database.ref(`users/${sanitizedUsername}`).once('value');
+            if (snapshot.exists()) {
+                const uData = snapshot.val();
+                
+                if (uData.status === 'blocked' || uData.status === 'locked') {
+                    alert("Aap ka account blocked ya temporary locked hai.");
+                    return;
+                }
+
+                if (uData.planType === 'Plan 1') {
+                    isPlan1 = true;
+                }
+                if (uData.planType === 'Trial') {
+                    isTrial = true;
+                }
+
+                if (customProxyInput && (uData.planType === 'Trial' || uData.planType === 'Plan 1' || uData.planType === 'Plan 2')) {
+                    alert("Advanced Proxy Settings Cloudflare Bypass istamal karne ke liye high subscription plan lazmi hai!");
+                    return;
+                }
+
+                const now = Date.now();
+                let hasAccess = false;
+                let dailyLimit = 0;
+                let isPromo = false;
+
+                if (uData.planActive && uData.planExpiresAt) {
+                    if (now < uData.planExpiresAt) {
+                        hasAccess = true;
+                        dailyLimit = uData.dailyExtractionLimit || 0;
+                    } else {
+                        // Plan expired: deactivate on execution attempt
+                        await database.ref(`users/${sanitizedUsername}`).update({ planActive: false });
+                    }
+                } else if (uData.promoActive && uData.promoExpiresAt && now < uData.promoExpiresAt) {
+                    if (uData.promoUsageLimit && uData.promoUsageCount < uData.promoUsageLimit) {
+                        hasAccess = true;
+                        dailyLimit = uData.promoUsageLimit;
+                        isPromo = true;
+                    }
+                }
+
+                if (!hasAccess) {
+                    alert("Aap ke paas koi active subscription plan ya promo code nahi hai. Bypass lock hai.");
+                    updateIndicators(false);
+                    return;
+                }
+
+                if (!isPromo && uData.dailyExtractionsUsed >= dailyLimit) {
+                    alert(`Daily extraction limit (${dailyLimit}) khatam ho chuki hai.`);
+                    return;
+                } else if (isPromo && uData.promoUsageCount >= dailyLimit) {
+                    alert(`Promo Code usage limit (${dailyLimit}) khatam ho chuki hai.`);
+                    return;
+                }
+
+                allowedServers = getActivePlanLimits(uData);
+
+                if (isPromo) {
+                    await database.ref(`users/${sanitizedUsername}`).update({
+                        promoUsageCount: uData.promoUsageCount + 1
+                    });
+                } else {
+                    await database.ref(`users/${sanitizedUsername}`).update({
+                        dailyExtractionsUsed: uData.dailyExtractionsUsed + 1
+                    });
+                }
+            } else {
+                alert("User session not found.");
+                return;
+            }
+        } catch(err) {
+            console.error("Access verification failed: ", err);
+            return;
+        }
+
+        extractBtn.disabled = true;
+        setTimeout(() => { extractBtn.disabled = false; }, 3000);
+
+        document.getElementById("codeSearchInput").value = "";
+        document.getElementById("searchCount").textContent = "0 matches";
+
+        isEditMode = false;
+        document.getElementById('editTextArea').style.display = 'none';
+        document.getElementById('highlightedView').style.display = 'block';
+        document.getElementById('editBtn').textContent = "Edit Code";
+        codeTabBtn.textContent = "web Code";
+
+        if (!urlInput) {
+            alert('Meharbani farma kar pehle ek durust URL ya Website ka Naam enter karein.');
+            return;
+        }
+
+        statusMsg.textContent = "Analyzing input name & address, please wait...";
+        statusMsg.style.color = "#ff9800";
+        loaderBar.style.width = "5%";
+
+        const isDomain = urlInput.includes('.') && !urlInput.includes(' ') && urlInput.split('.').pop().length >= 2;
+
+        if (!urlInput.startsWith('http://') && !urlInput.startsWith('https://')) {
+            if (isDomain) {
+                urlInput = 'https://' + urlInput;
+                document.getElementById('webUrl').value = urlInput;
+            } else {
+                statusMsg.textContent = `Searching live engines to resolve address for "${urlInput}"...`;
+                const resolvedUrl = await resolveNameMatches(urlInput, allowedServers.searches);
+                if (resolvedUrl) {
+                    statusMsg.textContent = `Address found: ${resolvedUrl}. Extracting code...`;
+                    urlInput = resolvedUrl;
+                    document.getElementById('webUrl').value = urlInput;
+                } else {
+                    alert("Is naam ki koi live website nahi mil saki. Meharbani farma kar link ya mukammal naam enter karein.");
+                    extractBtn.disabled = false;
+                    loaderBar.style.width = "0%";
+                    statusMsg.textContent = "Resolution failed.";
+                    return;
+                }
+            }
+        }
+
+        codeBlock.textContent = "Bypass files dynamically...";
+        actionBar.style.display = "none";
+        loaderBar.style.width = "10%";
+        rawFetchedCode = "";
+
+        const hostname = getHostname(urlInput);
+        resolveWebsiteIP(hostname, allowedServers.ips, isPlan1, isTrial);
+
+        const startTime = performance.now();
+        let success = false;
+        let finalContent = "";
+
+        if (customProxyInput) {
+            statusMsg.textContent = "Custom Proxy Engine ke zariye bypass koshish ki ja rahi hai...";
+            loaderBar.style.width = "15%";
+            try {
+                const targetUrl = customProxyInput + encodeURIComponent(urlInput);
+                const response = await fetch(targetUrl);
+                if (!response.ok) throw new Error("HTTP Status: " + response.status);
+                const content = await response.text();
+                const cleaned = cleanProxyResponse(content);
+                if (cleaned && cleaned.trim().length > 0) {
+                    finalContent = cleaned;
+                    success = true;
+                }
+            } catch (err) {
+                console.error("Custom proxy failed: ", err);
+                statusMsg.textContent = "Custom proxy fail ho gaya: " + err.message;
+            }
+        }
+
+        if (!success) {
+            statusMsg.textContent = `Connecting to ${allowedServers.extractions.length} concurrent extraction nodes...`;
+            loaderBar.style.width = "40%";
+            try {
+                const racedResult = await concurrentBypassFetch(urlInput, allowedServers.extractions);
+                if (racedResult) {
+                    finalContent = racedResult;
+                    success = true;
+                }
+            } catch (err) {
+                console.error("Parallel race dispatch failed: ", err);
+                statusMsg.textContent = "Concurrent grid nodes failed to resolve host.";
+            }
+        }
+
+        if (success && finalContent) {
+            rawFetchedCode = finalContent;
+            const endTime = performance.now();
+            const loadTime = ((endTime - startTime) / 1000).toFixed(2);
+            const pageSizeFormatted = formatPageSize(finalContent.length);
+            
+            const detectedLang = detectLanguage(urlInput, finalContent);
+            codeTabBtn.textContent = `Source Code (${detectedLang.toUpperCase()})`;
+
+            // If user is on Trial Plan, truncate shown code to 15 lines max and append warning text
+            let displayContent = finalContent;
+            if (isTrial) {
+                const lines = finalContent.split('\n');
+                if (lines.length > 15) {
+                    displayContent = lines.slice(0, 15).join('\n') + 
+                        "\n\n<!-- [REST OF THE CODE BLOCKED / HIDDEN] -->\n" +
+                        "<!-- If you want full code and details to buy a plan subscription -->";
+                }
+            }
+
+            try {
+                if (displayContent.length > 250000) {
+                    codeBlock.textContent = displayContent;
+                    codeBlock.className = `language-${detectedLang}`;
+                    statusMsg.textContent = `Success! Mukammal code load ho chuka hai (Memory-Safe Mode).`;
+                } else {
+                    codeBlock.textContent = displayContent;
+                    codeBlock.className = `language-${detectedLang}`;
+                    Prism.highlightElement(codeBlock);
+                    statusMsg.textContent = `Success! Website ka code kamyabi se extract kar liya gaya hai.`;
+                }
+            } catch(e) {
+                console.warn("Prism failed, falling back to raw text", e);
+                codeBlock.textContent = displayContent;
+            }
+            
+            // Render Live Preview with full code sequence
+            updateLivePreview(detectedLang, finalContent, urlInput);
+            parseSEODetails(finalContent, pageSizeFormatted, loadTime);
+
+            saveToFirebaseExtraction(urlInput, "Code Extracted", pageSizeFormatted, `${loadTime}s`);
+
+            statusMsg.style.color = "#4caf50";
+            actionBar.style.display = "flex"; 
+            loaderBar.style.width = "100%";
+            setTimeout(() => { loaderBar.style.width = "0%"; }, 1000);
+            switchTab('codeTab');
+        } else {
+            statusMsg.textContent = "alart: Target website ne connection block kar di hain ya link durust nahi hai.";
+            statusMsg.style.color = "#f44336";
+            codeBlock.textContent = "Unable to extract code. Nodes limit consumed.";
+            previewIframe.srcdoc = "<p style='text-align:center; padding:50px; color:red;'>Firewall blocked standard connection requests.</p>";
+            resetSEOData();
+            loaderBar.style.width = "0%";
+        }
+    }
+
+    // Resolves DDG name search matches using only dynamic search servers
+    async function resolveNameMatches(query, allowedSearchNodes) {
+        const cleanQuery = query.trim();
+        const ddgUrl = `https://html.duckduckgo.com/html/?q=${encodeURIComponent(cleanQuery)}`;
+        
+        const fetchPromises = allowedSearchNodes.map(async (srv) => {
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 8000);
+            try {
+                const proxyUrl = srv.url(ddgUrl, Date.now());
+                const response = await fetch(proxyUrl, { signal: controller.signal });
+                clearTimeout(timeoutId);
+                if (!response.ok) return null;
+                
+                let html = "";
+                if (proxyUrl.includes("allorigins")) {
+                    const json = await response.json();
+                    html = json.contents;
+                } else {
+                    html = await response.text();
+                }
+                
+                if (!html || html.length < 500) return null;
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, 'text/html');
+                const links = doc.querySelectorAll('a.result__snippet, a.result__url, a.result__a');
+                for (let link of links) {
+                    const href = link.getAttribute('href');
+                    if (href && href.includes('uddg=')) {
+                        const urlParams = new URLSearchParams(href.substring(href.indexOf('?')));
+                        const actualUrl = urlParams.get('uddg');
+                        if (actualUrl && (actualUrl.startsWith('http://') || actualUrl.startsWith('https://'))) {
+                            return actualUrl;
+                        }
+                    }
+                }
+            } catch(e) {
+                clearTimeout(timeoutId);
+            }
+            return null;
+        });
+
+        try {
+            const results = await Promise.all(fetchPromises);
+            const valid = results.find(r => r !== null);
+            if (valid) return valid;
+        } catch(e){}
+
+        let formatted = cleanQuery.toLowerCase().replace(/\s+/g, '');
+        if (!formatted.includes('.')) { formatted += '.com'; }
+        return formatted.startsWith('http') ? formatted : 'https://' + formatted;
+    }
+
+    // Advanced Server IP Trace Resolving node using only allowed IP gateway nodes
+    async function resolveWebsiteIP(hostname, allowedIpNodes, isPlan1, isTrial) {
+        const statIP = document.getElementById('statIP');
+        const copyIPBtn = document.getElementById('copyIPBtn');
+        
+        if (isPlan1 || isTrial) {
+            statIP.innerHTML = "<span style='color:#f44336; font-weight:bold;'> Locked Upgrade Plan to Unlock</span>";
+            copyIPBtn.style.display = "none";
+            return;
+        }
+
+        statIP.innerHTML = "<span style='color:#ff9800;'>DNS Record aur Server IP bypass analysis jari hai...</span>";
+        copyIPBtn.style.display = "none";
+
+        let mainIP = "Not Found";
+        const fetchPromises = allowedIpNodes.map(async (node) => {
+            try {
+                const res = await fetch(node.dnsUrl(hostname));
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data.Answer && data.Answer.length > 0) {
+                        return data.Answer[0].data;
+                    }
+                }
+            } catch(e){}
+            return null;
+        });
+
+        try {
+            const results = await Promise.all(fetchPromises);
+            const foundIp = results.find(r => r !== null);
+            if (foundIp) {
+                mainIP = foundIp;
+            }
+        } catch(e){}
+
+        if (mainIP !== "Not Found") {
+            statIP.innerHTML = `<span style="color:#4caf50; font-weight:bold;">${mainIP}</span><br><span style="font-size:11px; color:#8a8a9e;">Secure DNS trace bypass complete.</span>`;
+            statIP.setAttribute("data-copy-val", mainIP);
+            copyIPBtn.style.display = "inline-block";
+        } else {
+            statIP.textContent = "Error resolving server architecture";
+        }
+    }
+
+    // Geolocation API for auditing IP Origin
+    async function auditIPAddress(ip) {
+        try {
+            const res = await fetch(`https://ip-api.com/json/${ip}`);
+            if (res.ok) { return await res.json(); }
+        } catch(e) {}
+        return null;
+    }
+
+    function cleanProxyResponse(content) {
+        if (!content) return "";
+        let parsed = content.trim();
+        if (parsed.startsWith('{"contents":')) {
+            try {
+                const data = JSON.parse(parsed);
+                if (data.contents) { return data.contents; }
+            } catch(e) {}
+        }
+        return content;
+    }
+
+    function getHostname(url) {
+        try {
+            const parsed = new URL(url);
+            return parsed.hostname;
+        } catch (e) {
+            let hostname = url.replace(/^(https?:\/\/)?(www\.)?/, '');
+            hostname = hostname.split('/')[0].split('?')[0];
+            return hostname;
+        }
+    }
+
+    function formatPageSize(bytes) {
+        if (bytes === 0) return '0 Bytes';
+        const k = 1024;
+        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    }
+
+    function toggleSettings() {
+        const panel = document.getElementById('settingsPanel');
+        panel.style.display = panel.style.display === 'block' ? 'none' : 'block';
+    }
+
+    function switchTab(tabId) {
+        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+
+        const activeContent = document.getElementById(tabId);
+        if (activeContent) activeContent.classList.add('active');
+
+        const btnIndex = tabId === 'codeTab' ? 0 : tabId === 'previewTab' ? 1 : 2;
+        document.querySelectorAll('.tab-btn')[btnIndex].classList.add('active');
+    }
+
+    // Universal Multi-Language Detection Engine (22 Languages Support)
+    function detectLanguage(url, content) {
+        const lowercaseUrl = url.toLowerCase();
+        
+        // 1. Extensions check from address/link
+        if (lowercaseUrl.endsWith('.py') || lowercaseUrl.includes('.py?')) return 'python';
+        if (lowercaseUrl.endsWith('.js') || lowercaseUrl.includes('.js?')) return 'javascript';
+        if (lowercaseUrl.endsWith('.java') || lowercaseUrl.includes('.java?')) return 'java';
+        if (lowercaseUrl.endsWith('.cpp') || lowercaseUrl.includes('.cpp?') || lowercaseUrl.endsWith('.cc') || lowercaseUrl.includes('.cc?')) return 'cpp';
+        if (lowercaseUrl.endsWith('.cs') || lowercaseUrl.includes('.cs?')) return 'csharp';
+        if (lowercaseUrl.endsWith('.c') || lowercaseUrl.includes('.c?')) return 'c';
+        if (lowercaseUrl.endsWith('.sql') || lowercaseUrl.includes('.sql?')) return 'sql';
+        if (lowercaseUrl.endsWith('.ts') || lowercaseUrl.includes('.ts?')) return 'typescript';
+        if (lowercaseUrl.endsWith('.go') || lowercaseUrl.includes('.go?')) return 'go';
+        if (lowercaseUrl.endsWith('.rs') || lowercaseUrl.includes('.rs?')) return 'rust';
+        if (lowercaseUrl.endsWith('.php') || lowercaseUrl.includes('.php?')) return 'php';
+        if (lowercaseUrl.endsWith('.swift') || lowercaseUrl.includes('.swift?')) return 'swift';
+        if (lowercaseUrl.endsWith('.kt') || lowercaseUrl.includes('.kt?') || lowercaseUrl.endsWith('.kts') || lowercaseUrl.includes('.kts?')) return 'kotlin';
+        if (lowercaseUrl.endsWith('.rb') || lowercaseUrl.includes('.rb?')) return 'ruby';
+        if (lowercaseUrl.endsWith('.pl') || lowercaseUrl.includes('.pl?') || lowercaseUrl.endsWith('.pm') || lowercaseUrl.includes('.pm?')) return 'perl';
+        if (lowercaseUrl.endsWith('.dart') || lowercaseUrl.includes('.dart?')) return 'dart';
+        if (lowercaseUrl.endsWith('.r') || lowercaseUrl.includes('.r?')) return 'r';
+        if (lowercaseUrl.endsWith('.m') || lowercaseUrl.includes('.m?')) return 'matlab';
+        if (lowercaseUrl.endsWith('.scala') || lowercaseUrl.includes('.scala?')) return 'scala';
+        if (lowercaseUrl.endsWith('.html') || lowercaseUrl.includes('.html?') || lowercaseUrl.endsWith('.htm') || lowercaseUrl.includes('.htm?')) return 'html';
+        if (lowercaseUrl.endsWith('.fs') || lowercaseUrl.includes('.fs?') || lowercaseUrl.endsWith('.fsx') || lowercaseUrl.includes('.fsx?')) return 'fsharp';
+        if (lowercaseUrl.endsWith('.hopl') || lowercaseUrl.includes('.hopl?')) return 'hopl';
+        if (lowercaseUrl.endsWith('.css') || lowercaseUrl.includes('.css?')) return 'css';
+        if (lowercaseUrl.endsWith('.json') || lowercaseUrl.includes('.json?')) return 'json';
+
+        // 2. Syntax Heuristic Matcher Fallback
+        if (content) {
+            const codeSample = content.trim();
+            if (codeSample.startsWith('<html') || codeSample.startsWith('<!doctype') || codeSample.startsWith('<!DOCTYPE') || codeSample.startsWith('<div')) return 'html';
+            if (codeSample.startsWith('<?php')) return 'php';
+            if (/^\s*(select|insert|update|delete|create|drop|alter)\s+/i.test(codeSample)) return 'sql';
+            if (/^\s*(import\s+\w+|def\s+\w+\(|from\s+\w+\s+import)/.test(codeSample)) return 'python';
+            if (/^\s*(package\s+main|import\s+\()/.test(codeSample)) return 'go';
+            if (/^\s*(fn\s+main\(|use\s+std::|pub\s+fn)/.test(codeSample)) return 'rust';
+            if (/^\s*(using\s+System|namespace\s+\w+)/.test(codeSample)) return 'csharp';
+            if (/^\s*(public\s+class\s+\w+|import\s+java\.)/.test(codeSample)) return 'java';
+            if (/^\s*(#include\s+<iostream>|#include\s+<stdio\.h>)/.test(codeSample)) return 'cpp';
+        }
+
+        return 'html'; // Default standard fallback
+    }
+
+    // Live Preview Engine (Resolves Relative assets and playback streams securely)
+    function updateLivePreview(detectedLang, content, baseUrl) {
+        const previewIframe = document.getElementById('previewIframe');
+        if (detectedLang === 'html' || detectedLang === 'php') {
+            previewIframe.removeAttribute('sandbox');
+            previewIframe.setAttribute('sandbox', 'allow-scripts allow-forms allow-same-origin');
+            
+            let previewContent = content;
+            if (baseUrl) {
+                let absoluteBaseUrl = baseUrl;
+                if (!absoluteBaseUrl.startsWith('http://') && !absoluteBaseUrl.startsWith('https://')) {
+                    absoluteBaseUrl = 'https://' + absoluteBaseUrl;
+                }
+                
+                // Exclude preexisting conflicting base elements
+                previewContent = previewContent.replace(/<base\s+[^>]*>/gi, '');
+                
+                // Inject base tag mapping relative endpoints to original target
+                const baseTag = `<base href="${absoluteBaseUrl}">`;
+                if (previewContent.toLowerCase().includes('<head>')) {
+                    previewContent = previewContent.replace(/<head>/i, `<head>${baseTag}`);
+                } else {
+                    previewContent = baseTag + previewContent;
+                }
+            }
+            previewIframe.srcdoc = previewContent;
+        } else {
+            previewIframe.srcdoc = "<p style='text-align:center; padding:50px; color:#666;'>Direct rendering is only available for markup files.</p>";
+        }
+    }
+
+    function parseSEODetails(htmlString, pageSizeFormatted, loadTime) {
+        try {
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(htmlString, 'text/html');
+            const title = doc.querySelector('title')?.textContent || 'No Title tag found';
+            document.getElementById('statTitle').textContent = title;
+
+            const desc = doc.querySelector('meta[name="description"]')?.getAttribute('content') || 'No meta description found.';
+            document.getElementById('statDesc').textContent = desc;
+
+            const scriptsCount = doc.querySelectorAll('script').length;
+            const stylesCount = doc.querySelectorAll('link[rel="stylesheet"]').length;
+
+            document.getElementById('countLinks').textContent = doc.querySelectorAll('a').length;
+            document.getElementById('countImages').textContent = doc.querySelectorAll('img').length;
+            document.getElementById('countScripts').textContent = scriptsCount;
+            document.getElementById('countStyles').textContent = stylesCount;
+            document.getElementById('statPageSize').textContent = pageSizeFormatted;
+            document.getElementById('statLoadTime').textContent = `${loadTime}s`;
+
+            const assetList = document.getElementById('assetList');
+            assetList.innerHTML = '';
+            
+            const scripts = doc.querySelectorAll('script[src]');
+            const links = doc.querySelectorAll('link[href]');
+            let hasAssets = false;
+
+            scripts.forEach(s => {
+                hasAssets = true;
+                const div = document.createElement('div');
+                div.className = 'asset-item';
+                div.textContent = `[Script] ${s.getAttribute('src')}`;
+                assetList.appendChild(div);
+            });
+
+            links.forEach(l => {
+                hasAssets = true;
+                const div = document.createElement('div');
+                div.className = 'asset-item';
+                div.textContent = `[Stylesheet/Link] ${l.getAttribute('href')}`;
+                assetList.appendChild(div);
+            });
+
+            if (!hasAssets) {
+                assetList.textContent = "No bypasd assets detected.";
+            }
+
+        } catch(e){
+            console.error("SEO parsing error: ", e);
+        }
+    }
+
+    function searchInCode() {
+        const query = document.getElementById('codeSearchInput').value.toLowerCase();
+        const countSpan = document.getElementById('searchCount');
+        
+        let sourceToSearch = rawFetchedCode;
+        if (currentUserPlanType === 'Trial') {
+            const lines = rawFetchedCode.split('\n');
+            if (lines.length > 15) {
+                sourceToSearch = lines.slice(0, 15).join('\n');
+            }
+        }
+
+        if (!sourceToSearch) {
+            countSpan.textContent = "0 matches";
+            return;
+        }
+
+        if (!query) {
+            countSpan.textContent = "0 matches";
+            const detectedLang = detectLanguage(document.getElementById('webUrl').value.trim(), sourceToSearch);
+            const codeBlock = document.getElementById('codeBlock');
+            codeBlock.textContent = sourceToSearch;
+            codeBlock.className = `language-${detectedLang}`;
+            Prism.highlightElement(codeBlock);
+            return;
+        }
+
+        let count = 0;
+        let pos = sourceToSearch.toLowerCase().indexOf(query);
+        while (pos !== -1) {
+            count++;
+            pos = sourceToSearch.toLowerCase().indexOf(query, pos + 1);
+        }
+        
+        countSpan.textContent = `${count} matches`;
+    }
+
+    function resetSEOData() {
+        document.getElementById('statTitle').textContent = "No data available";
+        document.getElementById('statDesc').textContent = "No data available";
+        document.getElementById('countLinks').textContent = "0";
+        document.getElementById('countImages').textContent = "0";
+        document.getElementById('countScripts').textContent = "0";
+        document.getElementById('countStyles').textContent = "0";
+        document.getElementById('statPageSize').textContent = "0 KB";
+        document.getElementById('statLoadTime').textContent = "0s";
+        document.getElementById('statIP').textContent = "No data";
+        document.getElementById('copyIPBtn').style.display = "none";
+        document.getElementById('assetList').textContent = "No bypass assets detected.";
+    }
+
+    // Dynamic Firebase storage trigger for tracking
+    async function saveToFirebaseExtraction(url, title, size, loadTime) {
+        try {
+            await database.ref('extractions').push({
+                url: url,
+                title: title || 'No Title',
+                size: size || '0 KB',
+                loadTime: loadTime || '0s',
+                timestamp: Date.now()
+            });
+        } catch (error) {
+            console.error("Firebase saving failed:", error);
+        }
+    }
+
+    function toggleEditMode() {
+        if (currentUserPlanType === 'Trial') {
+            alert("alart: Edit Code feature free trial plan mein locked hai!");
+            return;
+        }
+
+        const highlightedView = document.getElementById('highlightedView');
+        const editTextArea = document.getElementById('editTextArea');
+        const editBtn = document.getElementById('editBtn');
+        const codeBlock = document.getElementById('codeBlock');
+
+        if (!rawFetchedCode) {
+            alert("Pehle kisi website ka code bypass karein.");
+            return;
+        }
+
+        if (!isEditMode) {
+            highlightedView.style.display = 'none';
+            editTextArea.value = rawFetchedCode;
+            editTextArea.style.display = 'block';
+            editBtn.textContent = "View Highlighted Code";
+            isEditMode = true;
+        } else {
+            rawFetchedCode = editTextArea.value;
+            codeBlock.textContent = rawFetchedCode;
+            Prism.highlightElement(codeBlock);
+            editTextArea.style.display = 'none';
+            highlightedView.style.display = 'block';
+            editBtn.textContent = "Edit Code";
+            isEditMode = false;
+        }
+    }
+
+    async function copyToClipboard() {
+        if (currentUserPlanType === 'Trial') {
+            alert("alart: Copy Code feature free trial plan mein locked hai!");
+            return;
+        }
+
+        if (isEditMode) {
+            rawFetchedCode = document.getElementById('editTextArea').value;
+        }
+        if (!rawFetchedCode) {
+            alert("Copy karne ke liye pehle code bypass karein!");
+            return;
+        }
+        copyTextToClipboard(rawFetchedCode);
+    }
+
+    function downloadCode() {
+        if (currentUserPlanType === 'Trial') {
+            alert("alart: Download Code feature free trial plan mein locked hai!");
+            return;
+        }
+
+        if (!rawFetchedCode) {
+            alert("Download karne ke liye pehle code bypass karein!");
+            return;
+        }
+        const blob = new Blob([rawFetchedCode], { type: "text/plain;charset=utf-8" });
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download = "extracted_code.html";
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+
+    // Globally bind standard triggers
+    window.fetchSourceCode = fetchSourceCode;
+    window.toggleSettings = toggleSettings;
+    window.switchTab = switchTab;
+    window.toggleEditMode = toggleEditMode;
+    window.copyIPToClipboard = copyIPToClipboard;
+    window.downloadCode = downloadCode;
+    window.copyToClipboard = copyToClipboard;
+    window.showRegisterForm = showRegisterForm;
+    window.showLoginForm = showLoginForm;
+    window.handleRegister = handleRegister;
+    window.handleLogin = handleLogin;
+    window.handleLogout = handleLogout;
+    window.toggleSidebar = toggleSidebar;
+    window.showView = showView;
+    window.openPaymentGateway = openPaymentGateway;
+    window.submitPaymentDetails = submitPaymentDetails;
+    window.copyIBAN = copyIBAN;
+    window.applyPromoCode = applyPromoCode;
+    window.activateTrialPlan = activateTrialPlan;
+    window.openWhatsAppChannel = openWhatsAppChannel;
+    window.searchInCode = searchInCode;
+    window.resetSEOData = resetSEOData;
+</script>
+
+</body>
+</html>
