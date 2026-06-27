@@ -2028,7 +2028,7 @@
         }
 
         if (!success) {
-            statusMsg.textContent = `Connecting to ${allowedServers.extractions.length} concurrent extraction nodes...`;
+            statusMsg.textContent = `Connecting to ${allowedServers.extractions.length} concurrent bypass nodes...`;
             loaderBar.style.width = "40%";
             try {
                 const racedResult = await concurrentBypassFetch(urlInput, allowedServers.extractions);
@@ -2066,12 +2066,12 @@
                 if (displayContent.length > 250000) {
                     codeBlock.textContent = displayContent;
                     codeBlock.className = `language-${detectedLang}`;
-                    statusMsg.textContent = `Success! Mukammal code load ho chuka hai (Memory-Safe Mode).`;
+                    statusMsg.textContent = `Success! Mukammal code load ho chuka hai Memory-Safe Mode.`;
                 } else {
                     codeBlock.textContent = displayContent;
                     codeBlock.className = `language-${detectedLang}`;
                     Prism.highlightElement(codeBlock);
-                    statusMsg.textContent = `Success! Website ka code kamyabi se extract kar liya gaya hai.`;
+                    statusMsg.textContent = `Success! Website ka code kamyabi se bypass kar liya gaya hai.`;
                 }
             } catch(e) {
                 console.warn("Prism failed, falling back to raw text", e);
@@ -2092,7 +2092,7 @@
         } else {
             statusMsg.textContent = "alart: Target website ne connection block kar di hain ya link durust nahi hai.";
             statusMsg.style.color = "#f44336";
-            codeBlock.textContent = "Unable to extract code. Nodes limit consumed.";
+            codeBlock.textContent = "Unable to bypass code. Nodes limit consumed.";
             previewIframe.srcdoc = "<p style='text-align:center; padding:50px; color:red;'>Firewall blocked standard connection requests.</p>";
             resetSEOData();
             loaderBar.style.width = "0%";
@@ -2189,7 +2189,7 @@
         } catch(e){}
 
         if (mainIP !== "Not Found") {
-            statIP.innerHTML = `<span style="color:#4caf50; font-weight:bold;">${mainIP}</span><br><span style="font-size:11px; color:#8a8a9e;">Secure DNS trace bypass complete.</span>`;
+            statIP.innerHTML = `<span style="color:#4caf50; font-weight:bold;">${mainIP}</span><br><span style="font-size:11px; color:#8a8a9e;"> DNS trace bypass complete.</span>`;
             statIP.setAttribute("data-copy-val", mainIP);
             copyIPBtn.style.display = "inline-block";
         } else {
