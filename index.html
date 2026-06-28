@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CODE BY X -Pro</title>
+    <title>CODE BY X -Elite</title>
     
     <!-- PrismJS (Code Highlight style) -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css">
@@ -777,7 +777,7 @@
                         
                         <!-- Target Server IP Address Box -->
                         <div class="stat-card full-width">
-                            <h3>Server IP Address (Bypass Detector)</h3>
+                            <h3>Server IP Address Bypass Detector</h3>
                             <div style="display: flex; flex-direction: column; gap: 5px; margin-top: 5px;">
                                 <p id="statIP" style="margin: 0; font-size: 15px; font-weight: bold; color: #4caf50; line-height: 1.4;">No data</p>
                                 <button id="copyIPBtn" class="btn btn-secondary" style="padding: 5px 12px; font-size: 11px; display: none; align-self: flex-start;" onclick="copyIPToClipboard()">Copy IP</button>
@@ -791,7 +791,7 @@
                                 Gambling applications aur React/TikTok websites ka asali source code aur back-end API links in links mein chhupa hota hai:
                             </p>
                             <div class="asset-list" id="assetList">
-                                No external assets detected.
+                                No bypass assets detected.
                             </div>
                         </div>
 
@@ -1373,7 +1373,7 @@
                     
                     // Verify if user is blocked or locked
                     if (uData.status === 'blocked' || uData.status === 'locked') {
-                        alert("Aap ka account blocked ya temporary locked hai. Meharbani farma kar company member se rabta karein.");
+                        alert("Aap ka account blocked hai. Meharbani farma kar company member se rabta karein.");
                         handleLogout();
                         return;
                     }
@@ -1601,7 +1601,7 @@
                 const userData = snapshot.val();
                 
                 if (userData.status === 'blocked' || userData.status === 'locked') {
-                    alert("Aap ka account blocked ya temporary locked hai.");
+                    alert("Aap ka account blocke hai.");
                     return;
                 }
 
@@ -1619,7 +1619,7 @@
                     alert("Galt Password! Dobara check karein.");
                 }
             } else {
-                alert("Yeh user database mein majood nahi hai. Pehle Register karein.");
+                alert("Yeh user server mein majood nahi hai. Pehle Register karein.");
             }
         } catch (error) {
             console.error(error);
@@ -1881,7 +1881,7 @@
                 const uData = snapshot.val();
                 
                 if (uData.status === 'blocked' || uData.status === 'locked') {
-                    alert("Aap ka account blocked ya temporary locked hai.");
+                    alert("Aap ka account blocked hai.");
                     return;
                 }
 
@@ -1925,7 +1925,7 @@
                 }
 
                 if (!isPromo && uData.dailyExtractionsUsed >= dailyLimit) {
-                    alert(`Daily extraction limit (${dailyLimit}) khatam ho chuki hai.`);
+                    alert(`Daily bypass limit (${dailyLimit}) khatam ho chuki hai.`);
                     return;
                 } else if (isPromo && uData.promoUsageCount >= dailyLimit) {
                     alert(`Promo Code usage limit (${dailyLimit}) khatam ho chuki hai.`);
@@ -2049,7 +2049,7 @@
             const pageSizeFormatted = formatPageSize(finalContent.length);
             
             const detectedLang = detectLanguage(urlInput, finalContent);
-            codeTabBtn.textContent = `Source Code (${detectedLang.toUpperCase()})`;
+            codeTabBtn.textContent = `web Code (${detectedLang.toUpperCase()})`;
 
             // If user is on Trial Plan, truncate shown code to 15 lines max and append warning text
             let displayContent = finalContent;
